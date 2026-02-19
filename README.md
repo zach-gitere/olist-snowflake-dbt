@@ -33,6 +33,13 @@ After transforming the raw data in **Snowflake** using **dbt**, I built an execu
 * **Regional Insight:** São Paulo (SP) is the highest volume region but has a lower AOV ($139.65) than the national average, indicating a high-frequency, lower-spend market.
 
 
+## Data Quality & Pipeline Automation
+To ensure the reliability of the $15.84M revenue figure and the overall health of the warehouse, I implemented a robust automation layer: 
+- **Python Orchestrator:** Developed automate_pipeline.py, a script that uses the Python subprocess library to manage the end-to-end execution of dbt run and dbt test in a single command. 
+- **Automated Data Quality:** Integrated a suite of dbt tests, including Generic tests (Unique, Not-Null) and Singular Business Logic tests (e.g., asserting that total order value is always positive) to catch data anomalies before they reach the Gold layer. 
+- **Environment Stability:** Configured the pipeline within a dedicated Python 3.12 virtual environment to ensure dependency resolution and cross-platform stability.
+
+
 ## Technical Challenges & Troubleshooting
 Building this pipeline required navigating several real-world technical hurdles:
 
