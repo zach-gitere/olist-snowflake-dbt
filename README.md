@@ -3,50 +3,80 @@
 
 
 
-# Olist Ecommerce Analytics Pipeline
-An end-to-end ELT pipeline built with **dbt**, **Snowflake**, and **GitHub**.
+# Olist E-Commerce Analytics Engineering Pipeline
 
-## Project Overview
-This project demonstrates an end-to-end Data Engineering and Analytics pipeline using the Olist Brazilian E-Commerce dataset. I built a full ELT (Extract, Load, Transform) workflow that moves raw data into a cloud warehouse, transforms it into business-ready dimensions and facts using dbt, and visualizes key performance indicators in Power BI
+Production-style ELT pipeline built with **dbt**, **Snowflake**, and **Power BI** using the Olist Brazilian E-Commerce dataset.
 
+---
 
-## Architecture
-This project follows a Medallion Architecture (Bronze/Silver/Gold) approach to ensure data quality and modularity:
+## 🚀 Objective
 
-- **Staging Layer (Silver):** Created modular staging views, including stg_olist_orders and stg_olist_customers, to perform initial cleaning, handle data type casting, and rename columns for better readability.
--**Intermediate Logic:** Developed the stg_items model to aggregate raw order line items. This model calculates key metrics like Total Item Revenue and Total Shipping Cost at the order_id level to prepare for high-level fact building.
-- **Marts Layer (Gold):** Developed the final fct_orders fact table within the MART schema. This table represents the "Single Source of Truth," created by joining three distinct data streams—Orders, Customers, and the aggregated Items data—enabling seamless analysis in Power BI..
+Design and implement a modular analytics engineering workflow that:
 
+- Loads raw transactional data into Snowflake
+- Transforms data using dbt following Medallion architecture
+- Implements automated data quality testing
+- Produces business-ready fact tables
+- Powers executive dashboards in Power BI
 
-## Tools Used
-- **Snowflake:** Data Warehouse & Compute.
-- **dbt (Data Build Tool):** Modeling and Transformation.
-- **GitHub:** Version control and CI/CD.
-- **Environment:** Python Virtual Environments & VS Code.
-- **Connectivity:** Snowflake connected to Power BI via Import Mode.
+---
 
+## 🏗 Architecture
 
-## Business Insights & Results
-After transforming the raw data in **Snowflake** using **dbt**, I built an executive dashboard in **Power BI** that revealed:
-* **Total Revenue:** $15.84M
-* **Average Order Value (AOV):** $159.33
-* **Regional Insight:** São Paulo (SP) is the highest volume region but has a lower AOV ($139.65) than the national average, indicating a high-frequency, lower-spend market.
+This project follows a **Medallion Architecture (Bronze / Silver / Gold)** approach.
 
+### 🥉 Bronze (RAW Layer)
+- Raw Olist CSV files loaded into Snowflake
+- No transformations applied
+- Serves as immutable source-of-truth layer
 
-## Data Quality & Pipeline Automation
-To ensure the reliability of the $15.84M revenue figure and the overall health of the warehouse, I implemented a robust automation layer: 
-- **Python Orchestrator:** Developed automate_pipeline.py, a script that uses the Python subprocess library to manage the end-to-end execution of dbt run and dbt test in a single command. 
-- **Automated Data Quality:** Integrated a suite of dbt tests, including Generic tests (Unique, Not-Null) and Singular Business Logic tests (e.g., asserting that total order value is always positive) to catch data anomalies before they reach the Gold layer. 
-- **Environment Stability:** Configured the pipeline within a dedicated Python 3.12 virtual environment to ensure dependency resolution and cross-platform stability.
+### 🥈 Silver (STAGING Layer)
+- Modular dbt staging models:
+  - `stg_olist_orders`
+  - `stg_olist_customers`
+  - `stg_items`
+- Data type casting
+- Column renaming for readability
+- Standardization of primary/foreign keys
+- Order-level aggregation of:
+  - Total Item Revenue
+  - Total Shipping Cost
 
+### 🥇 Gold (MART Layer)
+- `fct_orders` fact table built in MART schema
+- Star-schema design
+- Joins:
+  - Orders
+  - Customers
+  - Aggregated order items
+- Acts as the **Single Source of Truth** for reporting
 
-## Technical Challenges & Troubleshooting
-Building this pipeline required navigating several real-world technical hurdles:
+---
 
-**State Management & File Saving:** Encountered dbt "Compilation Errors" where changes in the code were not reflecting in the terminal. I identified that VS Code had not committed the file changes to disk (indicated by the "white circle" on the tab), emphasizing the importance of save-state management in local development.
+## ⭐ Data Model (Star Schema)
 
-**Dependency Resolution:** Solved a dbt node reference error where fct_orders depended on an undefined model. I resolved this by building out the missing stg_items staging layer and correctly using the ref() function to ensure a clean DAG (Directed Acyclic Graph).
+**Fact Table**
+- `fct_orders`
 
-**BI Security Configurations:** Faced an "Access Denied" error in Power BI when trying to render geographic maps. I successfully troubleshot this by enabling map visuals in the global security settings and categorizing the STATE field to ensure Bing Maps recognized the Brazilian regional codes.
+**Dimensions**
+- Customers
+- Geography (State)
+- Date (derived from order timestamp)
 
-**Cross-Platform Integration:** Managed a complex environment running Snowflake and dbt on macOS while simultaneously hosting Power BI Desktop via a Parallels Windows VM, ensuring stable connectivity between the two operating systems.
+---
+
+## 🛠 Technology Stack
+
+- **Snowflake** – Cloud Data Warehouse
+- **dbt (Data Build Tool)** – Data transformation & testing
+- **GitHub** – Version control
+- **Python 3.12 (Virtual Environment)** – Pipeline orchestration
+- **Power BI** – Business Intelligence visualization
+- **VS Code** – Development environment
+
+---
+
+## 🧪 Data Quality & Automation
+
+### Automated Pipeline
+Custom Python script:
